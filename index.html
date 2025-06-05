@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base target="_top">
+    <title> Unit Usaha Saprodi Koperasi Produsen Najaafarm Berkah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      body{
+        padding-top:60px;
+      }
+      section{
+        padding-top:80px;
+      }
+      nav-link.active {
+      font-weight: bold;
+      color: #fff;
+      
+      }
+      .navbar-toggler {
+      margin-right: 10px;
+      }
+
+      .content {
+      max-height: 100vh;
+      overflow-y: auto;
+      }
+
+      .navbar-brand p {
+      font-size: 0.85em; 
+      margin-top: -5px; 
+      
+      }
+
+
+    </style>
+  </head>
+  <body>
+
+  <!--navbar-->
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" >
+    <div class="container">
+      <!-- Logo & Nama Aplikasi -->
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="" alt="Logo" width="40" height="40" class="d-inline-block align-top me-2">
+        <div class="d-flex flex-column">
+          <span class="ms-2 fw-bold">Unit Usaha Saprodi</span>
+          <p class="ms-2 mb-0 small"> Koperasi Produsen Najaafarm Berkah</P>
+        </div>
+      </a>
+
+      <!-- Tombol Toggle untuk Mobile -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu Navigasi -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#sectionDashboard">Laporan Bulanan</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sectionDaftarProduk">Daftar Produk Saprodi</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sectionJualdanBeli">Pembelian dan Penjualan</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sectionRiwayatTransaksi">Transaksi Anggota</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content container mt-4" id="sectionDashboard">
+    <h2>Laporan Bulanan</h2>
+    <div class="row justify-content-end">
+      <div class="col-4">
+        <div class="mb-3">
+          <label for="reportMonth" class="form-label">Pilih Bulan</label>
+          <select class="form-control" id="reportMonth">
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+          </select>
+      </div>
+      </div>
+    <div class="col-4">
+      <div class="mb-3">
+          <label for="reportYear" class="form-label">Pilih Tahun</label>
+          <input type="number" class="form-control" id="reportYear" min="2020" max="2030">
+      </div>
+    </div>
+
+    <div class="col-4">
+      <button class="btn btn-primary" onclick="loadMonthlyReport()">Tampilkan Laporan</button>
+    </div>
+      </div>
+
+
+
+<table class="table" >
+  <thead>
+    <tr>
+      <th>Produk</th>
+      <th>Stok Awal bulan</th>
+      <th>Pembelian</th>
+      <th>Penjualan</th>
+      <th>Stok Akhir</th>
+    </tr>
+  </thead>
+  <tbody id="monthlyReportTable"></tbody>
+</table>
+<p id="totalPurchase"></p>
+<p id="totalSales"></p>
+<p id="totalFinalStockPrice"></p>
+
+
+<p id="profitLoss" class="text-danger mt-3"></p>
+<button class="btn btn-success mt-3" onclick="exportReportToSpreadsheet()">Ekspor ke Spreadsheet</button>
+<button class="btn btn-info mt-3" onclick="exportReportToDocs()">Ekspor ke Google Docs</button>
+
+
+  </div>
+
+  <div class="content container mt-4" id="sectionDaftarProduk">
+    <h2>Daftar Produk</h2>
+    <button id="addProductButton" class="btn btn-primary">Tambah Barang</button>
+    <button id="openPurchaseModalButton" class="btn btn-success">Pembelian Barang</button>
+    <button id="openSalesModalButton" class="btn btn-success">Penjualan Barang</button>
+
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nomor</th>
+          <th>Nama Barang</th>
+          <th>Harga Jual Satuan</th>
+          <th>qty</th>
+          <th>stok tersedia</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="productTableBody">
+        <!-- Data produk akan dimuat di sini -->
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="content container mt-4" id="sectionJualdanBeli">
+    <h2>Penjualan dan pembelian</h2>
+    <button id="openMemberOrder" class="btn btn-primary">Tambah Pesanan anggota</button>
+    <button id="openInvoiceModalButton" class="btn btn-primary">Cetak Struk Penjualan Produk</button>
+
+    <h3> Rekap Oreder Saprodi Anggota </h3>
+    <table class="table" id="orderSaprodiTable">
+    <thead>
+        <tr>
+            <th>Tanggal</th>
+            <th>Nama Anggota</th>
+            <th>Produk</th>
+            <th>Jumlah</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+  </div>
+
+  <div class="content container mt-4" id="sectionRiwayatTransaksi">
+    <h2>Transaksi Anggota</h2>
+
+
+<!-- Form Pilihan Bulan dan Tahun -->
+<div class="mb-3 d-flex align-items-center">
+    <label for="transactionMonth" class="form-label me-2">Bulan:</label>
+    <select class="form-control" id="transactionMonth">
+        <option value="1">Januari</option>
+        <option value="2">Februari</option>
+        <option value="3">Maret</option>
+        <option value="4">April</option>
+        <option value="5">Mei</option>
+        <option value="6">Juni</option>
+        <option value="7">Juli</option>
+        <option value="8">Agustus</option>
+        <option value="9">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">Desember</option>
+    </select>
+
+    <label for="transactionYear" class="form-label ms-3 me-2">Tahun:</label>
+    <input type="number" class="form-control" id="transactionYear" min="2020" max="2030">
+
+    <button class="btn btn-primary ms-3" onclick="loadMemberSalesReport()">Tampilkan</button>
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th rowspan="2">Nama Anggota</th>
+            <th rowspan="2">Total Pembelian</th>
+            <th colspan="3" class="text-center">Detail Produk yang Dibeli</th>
+        </tr>
+        <tr>
+            <th>Produk</th>
+            <th>Jumlah</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody id="memberSalesTable"></tbody>
+</table>
+
+
+  </div>
+
+  <!-- Modal Form tambah/edit barang -->
+  <div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Tambah/Edit Barang</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="productForm">
+            <div class="mb-3">
+              <label for="productName" class="form-label">Nama Barang</label>
+              <input type="text" class="form-control" id="productName">
+            </div>
+            <div class="mb-3">
+              <label for="productSalePrice" class="form-label">Harga jual Satuan </label>
+              <input type="number" class="form-control" id="productSalePrice">
+            </div>
+            <div class="mb-3">
+              <label for="productQtyType" class="form-label">Satuan Barang</label>
+              <input type="text" class="form-control" id="productQtyType">
+            </div>
+            <div class="mb-3">
+              <label for="productStock" class="form-label">Jumlah Stok Barang</label>
+              <input type="number" class="form-control" id="productStock">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Simpan</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Modal Form Order Barang -->
+  <div class="modal fade" id="MemberOrderModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Data Kebutuhan Saprodi Anggota</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="orderForm">
+            <div class="mb-3">
+              <label for="orderDate" class="form-label">Tanggal Order</label>
+              <input type="date" class="form-control" id="orderDate">
+            </div>
+            <div class="mb-3">
+              <label for="memberName" class="form-label">Nama Anggota</label>
+              <input list="memberList" class="form-control" id="memberName" oninput="filterMemberList()">
+              <datalist id="memberList"></datalist>
+            </div>
+
+            <div class="mb-3">
+              <label for="productNameOrder" class="form-label">Produk</label>
+              <input list="productList" class="form-control" id="productNameOrder">
+              <datalist id="productList"></datalist>
+            </div>
+            <div class="mb-3">
+              <label for="productQtyOrder" class="form-label">Jumlah</label>
+              <input type="number" class="form-control" id="productQtyOrder">
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan Order</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+ <!-- Modal Form Pembelian Barang -->
+<div class="modal fade" id="PurchaseModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pembelian Barang</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="purchaseForm">
+          <div class="mb-3">
+            <label for="purchaseDate" class="form-label">Tanggal Pembelian</label>
+            <input type="date" class="form-control" id="purchaseDate">
+          </div>
+          <div class="mb-3">
+    <label for="purchaseProduct" class="form-label">Produk</label>
+    <select class="form-control" id="purchaseProduct" onchange="updatePurchaseQty()"></select>
+</div>
+
+          <div class="mb-3">
+    <label for="supplierName" class="form-label">Penyedia Barang</label>
+    <input list="supplierList" class="form-control" id="supplierName">
+    <datalist id="supplierList"></datalist>
+</div>
+
+          <div class="mb-3">
+    <label id="purchaseQtyLabel" for="purchaseQty" class="form-label">Jumlah Pembelian</label>
+    <input type="number" class="form-control" id="purchaseQty">
+</div>
+
+
+          <div class="mb-3">
+            <label for="totalPrice" class="form-label">Total Harga Pembelian</label>
+            <input type="number" class="form-control" id="totalPrice">
+          </div>
+          <button type="submit" class="btn btn-primary">Simpan Pembelian</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Form Penjualan Barang -->
+<div class="modal fade" id="SalesModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Penjualan Barang</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="salesForm">
+          <div class="mb-3">
+            <label for="salesMemberName" class="form-label">Nama Anggota</label>
+            <select class="form-control" id="salesMemberName" onchange="updateProductDropdown()"></select>
+          </div>
+          <div class="mb-3">
+            <label for="salesProduct" class="form-label">Produk</label>
+            <select class="form-control" id="salesProduct" onchange="updateSaleQtyPrice()"></select>
+          </div>
+          <div class="mb-3">
+            <label for="salesQty" class="form-label">Jumlah</label>
+            <input type="number" class="form-control" id="salesQty" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="salesTotalPrice" class="form-label">Total Harga</label>
+            <input type="number" class="form-control" id="salesTotalPrice" readonly>
+          </div>
+          <button type="submit" class="btn btn-primary">Simpan Penjualan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cetak Struk -->
+<div class="modal fade" id="InvoiceModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cetak Struk Penjualan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="invoiceForm">
+          <div class="mb-3">
+            <label for="invoiceMember" class="form-label">Nama Anggota</label>
+            <select class="form-control" id="invoiceMember" onchange="updateInvoiceDateOptions()"></select>
+          </div>
+          <div class="mb-3">
+            <label for="invoiceDate" class="form-label">Tanggal Transaksi</label>
+            <select class="form-control" id="invoiceDate"></select>
+          </div>
+          <button type="submit" class="btn btn-success">Cetak Struk</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+    <p id="footerText"></p>
+</footer>
+
+  </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+
+
+    //fungsi navbar
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".nav-link").forEach(link => {
+        link.addEventListener("click", function (event) {
+          event.preventDefault(); // Mencegah navigasi default
+
+          let targetId = this.getAttribute("href").substring(1);
+          let targetElement = document.getElementById(targetId);
+
+          if (targetElement) {
+            let navbarHeight = document.querySelector(".navbar").offsetHeight; // Ambil tinggi navbar
+            let offsetPosition = targetElement.offsetTop - navbarHeight - 20; // Tambahkan jarak agar tidak tertutup
+
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+
+            // **Pindahkan efek aktif di navbar**
+            document.querySelectorAll(".nav-link").forEach(nav => nav.classList.remove("active"));
+            this.classList.add("active");
+          }
+        });
+      });
+    });
+
+    //format rupiah
+    function formatRupiah(amount) {
+      return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    //event listener buka modal tambbah produk
+    document.addEventListener("DOMContentLoaded", function () {
+      //load barang
+      loadProductsList();
+      loadOrderSaprodiList();
+
+      //button tambah barang
+      document.getElementById("addProductButton").addEventListener("click", function () {
+        editMode = false;
+        editIndex = null;
+
+        document.getElementById("productName").value = "";
+        document.getElementById("productSalePrice").value = "";
+        document.getElementById("productQtyType").value = "";
+        document.getElementById("productStock").value = "";
+        document.getElementById("modalTitle").textContent = "Tambah Item Produk"
+
+        let modal = new bootstrap.Modal(document.getElementById("productModal"));
+        let form = document.getElementById("productForm");
+
+        form.removeEventListener("submit", handleEditSubmit);
+        form.removeEventListener("submit", handleAddSubmit);
+        form.addEventListener("submit", handleAddSubmit);
+
+        modal.show();
+      });
+
+
+    });
+//tampilkan daftar barang
+function loadProductsList() {
+    google.script.run.withSuccessHandler(function(products) {
+        if (!products || typeof products !== "object") {
+            console.error("Data produk tidak valid:", products);
+            return;
+        }
+
+        let productArray = Object.keys(products).map((productName, index) => ({
+            name: productName,
+            price: products[productName].price,
+            unitType: products[productName].unitType,
+            stock: products[productName].stock,
+            index: index
+        }));
+
+        let productTableBody = document.getElementById("productTableBody");
+        productTableBody.innerHTML = "";
+
+        productArray.forEach(product => {
+            let stokTersedia = product.stock ? `${product.stock} ${product.unitType || ""}` : "Stok tidak tersedia";
+
+            let row = productTableBody.insertRow();
+            row.innerHTML = `<td>${product.index + 1}</td>
+                            <td>${product.name}</td>
+                            <td>${formatRupiah(product.price)}</td>
+                            <td>${product.unitType || "-"}</td>
+                            <td>${stokTersedia}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="showEditModal('${product.name}', '${product.price}', '${product.unitType}', '${product.stock}', ${product.index})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteProductItem( '${product.name}')">Delete</button>
+                            </td>`;
+        });
+    }).getProductsList();
+}
+
+
+
+
+    //fungsi tambah barang
+
+    function handleAddSubmit(event){
+      event.preventDefault();
+      
+      let productName= document.getElementById("productName").value;
+      let priceSale = parseFloat(document.getElementById("productSalePrice").value);
+      let qtyType = document.getElementById("productQtyType").value;
+      let stock = parseInt(document.getElementById("productStock").value);
+
+      if (!productName.trim() || isNaN(priceSale) || !qtyType.trim() || isNaN(stock)){
+        alert("semua kolom harus diisi!");
+        return;
+      }
+      google.script.run.withSuccessHandler(function(message){
+        alert(message);
+        // updateProductListOptions(response.products);
+        loadProductsList();
+      }).addItemProduct(productName, priceSale, qtyType, stock)
+
+      bootstrap.Modal.getInstance(document.getElementById("productModal")).hide();
+    }
+
+    //update dropdown tambah barang jika ada barang baru
+    function updateProductListOptions(products) {
+    let productList = document.getElementById("productList");
+    productList.innerHTML = "";
+
+    products.forEach(product => {
+        let option = document.createElement("option");
+        option.value = product.name;
+        option.textContent = product.name;
+        productList.appendChild(option);
+    });
+}
+
+    //fungsi edit item barang (tombol simpan)
+
+function handleEditSubmit(event) {
+    event.preventDefault();
+    
+    let form = document.getElementById("productForm");
+    let editIndex = form.getAttribute("data-index");
+    let productName = document.getElementById("productName").value.trim();
+    let priceSale = parseFloat(document.getElementById("productSalePrice").value);
+    let qtyType = document.getElementById("productQtyType").value.trim();
+    let stock = parseInt(document.getElementById("productStock").value);
+
+    if (!productName || isNaN(priceSale) || !qtyType || isNaN(stock)) {
+        alert("Semua kolom harus diisi dengan benar!");
+        return;
+    }
+
+    let rowIndex = parseInt(editIndex) + 2; // Sesuaikan indeks untuk spreadsheet
+
+    google.script.run.withSuccessHandler(function(message) {
+        alert(message);
+        loadProductsList();
+    }).editItemProduct(rowIndex, productName, priceSale, qtyType, stock);
+
+    bootstrap.Modal.getInstance(document.getElementById("productModal")).hide();
+}
+
+
+    //tampilkan form edit barang (tombol edit)
+function showEditModal(name, price, unitType, stock, index) {
+    document.getElementById("productName").value = name;
+    document.getElementById("productSalePrice").value = price;
+    document.getElementById("productQtyType").value = unitType || "";
+    document.getElementById("productStock").value = stock || 0;
+    
+    document.getElementById("modalTitle").textContent = "Edit Item Produk";
+    let form = document.getElementById("productForm");
+    
+    form.setAttribute("data-index", index); // Simpan indeks produk yang diedit
+    form.removeEventListener("submit", handleEditSubmit);
+    form.addEventListener("submit", handleEditSubmit);
+
+    let modal = new bootstrap.Modal(document.getElementById("productModal"));
+    modal.show();
+}
+
+    //tombol hapus di daftar produk
+function deleteProductItem(name) {
+    let confirmDelete = confirm(`Apakah Anda yakin ingin menghapus produk "${name}"?`);
+    if (!confirmDelete) return;
+
+    console.log(`Menghapus produk: ${name}`);
+
+    google.script.run.withSuccessHandler(function(response) {
+        alert(response);
+        loadProductsList();
+    }).deleteProductItem(name);
+}
+
+
+
+
+
+
+    //tampilkan form pesanan saprodi anggota
+    document.getElementById("openMemberOrder").addEventListener("click",function(){
+      let form = document.getElementById("orderForm");
+    form.reset(); //
+      loadProductsListOptions();
+      loadMemberListOptions();
+      let modal = new bootstrap.Modal(document.getElementById("MemberOrderModal"));
+      modal.show();
+    } )
+
+    //tombol simpan pesanan di form pesanan
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let orderDate = document.getElementById("orderDate").value;
+    let memberName = document.getElementById("memberName").value;
+    let productName = document.getElementById("productNameOrder").value;
+    let productQty = document.getElementById("productQtyOrder").value;
+
+    if (!orderDate || !memberName || !productName || !productQty) {
+        alert("Semua kolom harus diisi!");
+        return;
+    }
+
+    google.script.run.withSuccessHandler(function(response) {
+        alert(response); // Pesan sukses
+        loadOrderSaprodiList(); // Perbarui daftar order
+        loadProductsList();
+    }).saveOrderSaprodi(orderDate, memberName, productName, productQty);
+
+    bootstrap.Modal.getInstance(document.getElementById("MemberOrderModal")).hide();
+});
+
+
+    //tampilkan nama anggota ke dropdown pilih anggota
+
+    let allMembers = []; // Menyimpan semua anggota agar bisa difilter nanti
+
+    function loadMemberListOptions() {
+        google.script.run.withSuccessHandler(function(members) {
+            allMembers = members; // Simpan data anggota
+            updateMemberOptions(""); // Perbarui opsi tanpa filter
+        }).getMemberKoperasi();
+    }
+
+    function filterMemberList() {
+        let input = document.getElementById("memberName").value.toLowerCase();
+        updateMemberOptions(input);
+    }
+
+    function updateMemberOptions(filter) {
+        let memberList = document.getElementById("memberList");
+        memberList.innerHTML = ""; // Bersihkan daftar opsi
+
+        let matchedMembers = allMembers.filter(member => member.name.toLowerCase().includes(filter));
+
+        if (matchedMembers.length === 0) {
+            let option = document.createElement("option");
+            option.value = "Nama anggota koperasi ini tidak ditemukan";
+            memberList.appendChild(option);
+        } else {
+            matchedMembers.forEach(member => {
+                let option = document.createElement("option");
+                option.value = member.name;
+                memberList.appendChild(option);
+            });
+        }
+    }
+
+    //tampilkan daftar pilihan produk
+   function loadProductsListOptions() {
+    google.script.run.withSuccessHandler(function(products) {
+        if (!Array.isArray(products)) {
+            console.error("Data produk tidak dalam format array:", products);
+            return;
+        }
+
+        let productList = document.getElementById("productList");
+        productList.innerHTML = ""; // Bersihkan opsi sebelum mengisi ulang
+        
+        products.forEach(product => {
+            let option = document.createElement("option");
+            option.value = product.name;
+            option.textContent = product.name;
+            productList.appendChild(option);
+        });
+    }).getProductsListAsArray();
+}
+
+
+//tampilkan rekap order anggota
+
+function loadOrderSaprodiList() {
+    google.script.run.withSuccessHandler(function(orders) {
+        let orderTableBody = document.getElementById("orderSaprodiTable").querySelector("tbody");
+        orderTableBody.innerHTML = ""; // Bersihkan tabel sebelum mengisi ulang
+
+        if (!orders || !Array.isArray(orders) || orders.length === 0) {
+            orderTableBody.innerHTML = `<tr><td colspan="4">Tidak ada order yang tersedia</td></tr>`;
+            return;
+        }
+
+        orders.forEach(order => {
+            let formattedQuantity = `${order.quantity} ${order.unitType}`; // Tambahkan unitType
+            let row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${order.date}</td>
+                <td>${order.member}</td>
+                <td>${order.product}</td>
+                <td>${formattedQuantity}</td> <!-- Kini jumlah termasuk unitType -->
+            `;
+            orderTableBody.appendChild(row);
+        });
+    }).getOrderSaprodiList();
+}
+
+
+
+//tampilkan data nama dan jumlah barang yang harus dibeli
+function loadOrderedProducts() {
+    google.script.run.withSuccessHandler(function(orders) {
+        let productSelect = document.getElementById("purchaseProduct");
+        productSelect.innerHTML = ""; // Bersihkan daftar produk sebelum mengisi ulang
+
+        let productTotals = {}; // Objek untuk menyimpan jumlah total pesanan per produk
+
+        if (!orders || orders.length === 0) {
+            let option = document.createElement("option");
+            option.textContent = "Tidak ada produk yang dipesan";
+            productSelect.appendChild(option);
+            return;
+        }
+
+        // Gabungkan pesanan dari anggota berbeda
+        orders.forEach(order => {
+            let productName = order.product;
+            let unitType = order.unitType;
+            let quantity = order.quantity;
+
+            if (productTotals[productName]) {
+                productTotals[productName].quantity += quantity;
+            } else {
+                productTotals[productName] = { quantity: quantity, unitType: unitType };
+            }
+        });
+
+        // Masukkan produk dengan total jumlah ke dalam dropdown
+        Object.keys(productTotals).forEach(productName => {
+            let option = document.createElement("option");
+            option.value = productName;
+            option.setAttribute("data-quantity", productTotals[productName].quantity);
+            option.setAttribute("data-unit", productTotals[productName].unitType);
+            option.textContent = `${productName} (${productTotals[productName].quantity} ${productTotals[productName].unitType})`;
+            productSelect.appendChild(option);
+        });
+
+        updatePurchaseQty(); // Isi jumlah otomatis setelah memilih produk
+    }).getOrderSaprodiList();
+}
+
+
+
+function updatePurchaseQty() {
+    let productSelect = document.getElementById("purchaseProduct");
+    let selectedOption = productSelect.options[productSelect.selectedIndex];
+
+    if (!selectedOption) return;
+
+    let quantity = selectedOption.getAttribute("data-quantity") || 0;
+    let unitType = selectedOption.getAttribute("data-unit") || "Unit Tidak Ditentukan";
+
+    document.getElementById("purchaseQty").value = quantity; // Pastikan hanya angka
+    document.getElementById("purchaseQtyLabel").textContent = `Jumlah Pembelian (${unitType})`; // UnitType tetap ditampilkan di label
+}
+
+
+
+
+//catat pembelian
+document.getElementById("purchaseForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let purchaseDate = document.getElementById("purchaseDate").value;
+    let productName = document.getElementById("purchaseProduct").value;
+    let supplierName = document.getElementById("supplierName").value;
+    let purchaseQty = document.getElementById("purchaseQty").value;
+    let totalPrice = document.getElementById("totalPrice").value;
+
+    if (!purchaseDate || !productName || !supplierName || !purchaseQty || !totalPrice) {
+        alert("Semua kolom harus diisi!");
+        return;
+    }
+
+    google.script.run.withSuccessHandler(function(response) {
+        alert(response); // Tampilkan pesan sukses
+        loadProductsList(); // Perbarui daftar produk dengan stok terbaru
+        loadMonthlyReport();
+    }).savePurchaseRecord(purchaseDate, productName, supplierName, purchaseQty, totalPrice);
+
+    bootstrap.Modal.getInstance(document.getElementById("PurchaseModal")).hide();
+});
+
+//tampilkan daftar penyedia produk di dropdown
+function loadSupplierList() {
+    google.script.run.withSuccessHandler(function(suppliers) {
+        let supplierList = document.getElementById("supplierList");
+        supplierList.innerHTML = ""; // Bersihkan opsi lama
+        
+        suppliers.forEach(supplier => {
+            let option = document.createElement("option");
+            option.value = supplier;
+            supplierList.appendChild(option);
+        });
+    }).getSupplierList();
+}
+
+document.getElementById("openPurchaseModalButton").addEventListener("click", function () {
+    loadOrderedProducts();
+    loadSupplierList(); // Ambil daftar penyedia produk dari sheet
+    let modal = new bootstrap.Modal(document.getElementById("PurchaseModal"));
+    modal.show();
+});
+
+
+//tombol jual barang
+document.getElementById("openSalesModalButton").addEventListener("click", function () {
+    loadMemberOrderList(); // Memuat daftar anggota dan produk yang mereka pesan
+    loadProductPrices(); // Memuat harga jual produk
+    let modal = new bootstrap.Modal(document.getElementById("SalesModal"));
+    modal.show();
+});
+
+
+function loadMemberOrderList() {
+    google.script.run.withSuccessHandler(function(memberOrders) {
+        let memberSelect = document.getElementById("salesMemberName");
+        memberSelect.innerHTML = "";
+
+        Object.keys(memberOrders).forEach(member => {
+            let option = document.createElement("option");
+            option.value = member;
+            option.textContent = member;
+            memberSelect.appendChild(option);
+        });
+
+        updateProductDropdown(); // Perbarui produk saat anggota dipilih
+    }).getMemberOrderList();
+}
+
+function updateProductDropdown() {
+    let memberSelect = document.getElementById("salesMemberName").value;
+
+    google.script.run.withSuccessHandler(function(memberOrders) {
+        google.script.run.withSuccessHandler(function(products) {
+            let productSelect = document.getElementById("salesProduct");
+            productSelect.innerHTML = "";
+
+            if (!memberOrders[memberSelect]) return;
+
+            Object.keys(memberOrders[memberSelect]).forEach(product => {
+                let unitType = products[product]?.unitType || "Unit Tidak Ditentukan";
+                let quantity = memberOrders[memberSelect][product];
+
+                let option = document.createElement("option");
+                option.value = product;
+                option.textContent = `${product} (${quantity} ${unitType})`; // Tambahkan unitType
+                productSelect.appendChild(option);
+            });
+
+            updateSaleQtyPrice(); // Perbarui jumlah dan harga
+        }).getProductsList();
+    }).getMemberOrderList();
+}
+
+
+function loadProductPrices() {
+    google.script.run.withSuccessHandler(function(prices) {
+        window.productPrices = prices; // Simpan harga jual produk
+    }).getProductPrices();
+}
+
+function updateSaleQtyPrice() {
+    let memberSelect = document.getElementById("salesMemberName");
+    let selectedMember = memberSelect.value;
+    
+    let productSelect = document.getElementById("salesProduct");
+    let selectedProduct = productSelect.value;
+
+    if (!selectedMember || !selectedProduct) return;
+
+    google.script.run.withSuccessHandler(function(memberOrders) {
+        google.script.run.withSuccessHandler(function(products) {
+            let qtyRaw = memberOrders[selectedMember]?.[selectedProduct] || 0; // Pastikan nilainya angka
+            let unitType = products[selectedProduct]?.unitType || "";
+
+            let numericQty = typeof qtyRaw === "string" ? parseInt(qtyRaw.match(/\d+/)) : qtyRaw; // Perbaikan
+
+            document.getElementById("salesQty").value = numericQty;
+            document.getElementById("salesTotalPrice").value = numericQty * (products[selectedProduct]?.price || 0);
+        }).getProductsList();
+    }).getMemberOrderList();
+}
+
+
+//simpan penjualan
+document.getElementById("salesForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let memberName = document.getElementById("salesMemberName").value;
+    let productName = document.getElementById("salesProduct").value;
+    let quantitySold = document.getElementById("salesQty").value;
+    let totalPrice = document.getElementById("salesTotalPrice").value;
+
+    if (!memberName || !productName || !quantitySold || !totalPrice) {
+        alert("Semua kolom harus diisi!");
+        return;
+    }
+
+    google.script.run.withSuccessHandler(function(response) {
+        if (response.includes("Stok tidak mencukupi")) {
+            alert(response); // Peringatan stok kurang
+            return;
+        }
+
+        alert(response); // Pesan sukses
+        loadMemberOrderList(); // Perbarui daftar order
+        loadProductPrices(); // Perbarui stok barang
+        loadOrderSaprodiList();
+        loadProductsList();
+        loadMonthlyReport();
+    }).saveSalesRecord(memberName, productName, quantitySold, totalPrice);
+
+    bootstrap.Modal.getInstance(document.getElementById("SalesModal")).hide();
+});
+
+
+//struk penjualan produk
+document.getElementById("openInvoiceModalButton").addEventListener("click", function () {
+    loadInvoiceData(); // Ambil data transaksi
+    let modal = new bootstrap.Modal(document.getElementById("InvoiceModal"));
+    modal.show();
+});
+
+function loadInvoiceData() {
+    google.script.run.withSuccessHandler(function(salesData) {
+        let memberSelect = document.getElementById("invoiceMember");
+        memberSelect.innerHTML = "";
+
+        Object.keys(salesData).forEach(member => {
+            let option = document.createElement("option");
+            option.value = member;
+            option.textContent = member;
+            memberSelect.appendChild(option);
+        });
+
+        updateInvoiceDateOptions(); // Perbarui tanggal transaksi saat anggota dipilih
+    }).getSalesRecords();
+}
+
+function updateInvoiceDateOptions() {
+    let member = document.getElementById("invoiceMember").value;
+    
+    google.script.run.withSuccessHandler(function(salesData) {
+        let dateSelect = document.getElementById("invoiceDate");
+        dateSelect.innerHTML = "";
+
+        if (!salesData[member]) return;
+
+        Object.keys(salesData[member]).forEach(date => {
+            let option = document.createElement("option");
+            option.value = date;
+            option.textContent = date;
+            dateSelect.appendChild(option);
+        });
+    }).getSalesRecords();
+}
+
+document.getElementById("invoiceForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let memberName = document.getElementById("invoiceMember").value;
+    let transactionDate = document.getElementById("invoiceDate").value;
+
+    google.script.run.withSuccessHandler(function(fileUrl) {
+        alert(`Struk berhasil dibuat!\nLihat dan unduh di: ${fileUrl}`);
+        window.open(fileUrl, "_blank");
+    }).generateInvoice(memberName, transactionDate);
+
+    bootstrap.Modal.getInstance(document.getElementById("InvoiceModal")).hide();
+});
+
+
+//fungsi baru laporan bulanan
+function loadMonthlyReport() {
+    let selectedMonth = document.getElementById("reportMonth").value;
+    let selectedYear = document.getElementById("reportYear").value;
+
+    if (!selectedMonth || !selectedYear) {
+        alert("Silakan pilih bulan dan tahun!");
+        return;
+    }
+
+    google.script.run.withSuccessHandler(function(report) {
+        if (!report || typeof report !== "object") {
+            console.warn("Data laporan bulanan tidak tersedia atau salah format:", report);
+            alert("Tidak ada transaksi untuk bulan ini.");
+            return;
+        }
+
+        let reportTableBody = document.getElementById("monthlyReportTable")?.querySelector("tbody");
+        if (!reportTableBody) reportTableBody = document.getElementById("monthlyReportTable");
+        reportTableBody.innerHTML = "";
+
+        report.products.forEach(item => {
+            let row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${item.product}</td>
+                <td>${item.initialStock}</td>
+                <td>${item.purchases} , Rp ${item.purchaseCost.toLocaleString()}</td>
+                <td>${item.sales} , Rp ${item.salesRevenue.toLocaleString()}</td>
+                <td>${item.finalStock}</td>
+            `;
+            reportTableBody.appendChild(row);
+        });
+
+        document.getElementById("totalPurchase").textContent = `Total Harga Pembelian: Rp ${report.totalExpense.toLocaleString()}`;
+        document.getElementById("totalSales").textContent = `Total Harga Penjualan: Rp ${report.totalRevenue.toLocaleString()}`;
+        document.getElementById("totalFinalStockPrice").textContent = `Total Harga Stok Akhir: Rp ${report.totalFinalStockPrice.toLocaleString()}`;
+
+
+        let profitLossDisplay = document.getElementById("profitLoss");
+let profitLossValue = report.profitLoss || 0; // Pastikan nilai tidak undefined
+
+// Tentukan warna berdasarkan nilai profit/loss
+if (profitLossValue > 0) {
+    profitLossDisplay.textContent = `Keuntungan: Rp ${profitLossValue.toLocaleString()}`;
+    profitLossDisplay.className = "text-success mt-3"; // Warna hijau
+} else if (profitLossValue < 0) {
+    profitLossDisplay.textContent = `Kerugian: Rp ${Math.abs(profitLossValue).toLocaleString()}`;
+    profitLossDisplay.className = "text-danger mt-3"; // Warna merah
+} else {
+    profitLossDisplay.textContent = `Saldo Netral: Rp ${profitLossValue.toLocaleString()}`;
+    profitLossDisplay.className = "text-secondary mt-3"; // Warna abu-abu jika 0
+}
+
+
+    }).getMonthlyReport(parseInt(selectedMonth), parseInt(selectedYear));
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth() + 1; // Bulan (1-12)
+    let currentYear = currentDate.getFullYear();   // Tahun (YYYY)
+
+    document.getElementById("reportMonth").value = currentMonth;
+    document.getElementById("reportYear").value = currentYear;
+    document.getElementById("transactionMonth").value = currentMonth;
+document.getElementById("transactionYear").value = currentYear;
+
+
+    // Panggil laporan bulanan otomatis
+    loadMonthlyReport();
+    loadMemberSalesReport();
+});
+
+function loadMemberSalesReport() {
+    let selectedMonth = document.getElementById("transactionMonth").value;
+    let selectedYear = document.getElementById("transactionYear").value;
+
+    if (!selectedMonth || !selectedYear) {
+        alert("Silakan pilih bulan dan tahun!");
+        return;
+    }
+
+    google.script.run.withSuccessHandler(function(memberSales) {
+        // console.log("Data transaksi anggota diterima:", memberSales);
+
+        let memberTableBody = document.getElementById("memberSalesTable");
+        memberTableBody.innerHTML = "";
+
+        if (!memberSales || memberSales.length === 0) {
+            memberTableBody.innerHTML = `<tr><td colspan="5">Tidak ada transaksi anggota bulan ini</td></tr>`;
+            return;
+        }
+
+        memberSales.forEach(member => {
+            let firstRow = true; // Menentukan apakah ini adalah baris pertama untuk anggota ini
+
+            member.products.forEach((product, index) => {
+                let row = document.createElement("tr");
+
+                if (firstRow) {
+                    row.innerHTML = `
+                        <td rowspan="${member.products.length}" class="align-middle">${member.member}</td>
+                        <td rowspan="${member.products.length}" class="align-middle text-center">Rp ${member.totalPurchase.toLocaleString()}</td>
+                    `;
+                    firstRow = false;
+                }
+
+                row.innerHTML += `
+                    <td>${product.product}</td>
+                    <td>${product.quantity}</td>
+                    <td>Rp ${product.subtotal.toLocaleString()}</td>
+                `;
+                memberTableBody.appendChild(row);
+            });
+        });
+
+    }).getMonthlySalesByMember(parseInt(selectedMonth), parseInt(selectedYear));
+}
+
+//export laporan ke spreadsheet dan gdocs
+function exportReportToSpreadsheet() {
+    let selectedMonth = document.getElementById("transactionMonth").value;
+    let selectedYear = document.getElementById("transactionYear").value;
+
+    google.script.run.withSuccessHandler(function(url) {
+        alert(`Laporan telah diekspor ke Spreadsheet:\n${url}`);
+        window.open(url);
+    }).exportMonthlyReportToSpreadsheet(parseInt(selectedMonth), parseInt(selectedYear));
+}
+
+function exportReportToDocs() {
+    let selectedMonth = document.getElementById("transactionMonth").value;
+    let selectedYear = document.getElementById("transactionYear").value;
+
+    google.script.run.withSuccessHandler(function(url) {
+        alert(`Laporan telah diekspor ke Google Docs:\n${url}`);
+        window.open(url);
+    }).exportMonthlyReportToDocs(parseInt(selectedMonth), parseInt(selectedYear));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    let currentYear = new Date().getFullYear();
+    document.getElementById("footerText").textContent = `© ${currentYear} Dikembangkan oleh Aldi Taufik`;
+});
+
+  </script>
+</html>
